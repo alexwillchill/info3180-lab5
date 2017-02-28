@@ -94,3 +94,9 @@ def page_not_found(error):
 
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0",port="8080")
+
+
+@app.route('/secure-page')
+@login_required
+def secure_page():
+    return render_template('secure_page.html')
