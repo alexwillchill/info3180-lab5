@@ -42,16 +42,20 @@ def login():
             # and password submitted
             # store the result of that query to a `user` variable so it can be
             # passed to the login_user() method.
-        user=UserProfile.query.filter(username=username,password=password).first()
+        user=UserProfile.query.filter_by(username=username,password=password).first()
             # get user id, load into session
         if user is not None:
             login_user(user)
-
+        
             # remember to flash a message to the user
             
             
-            return redirect(url_for("secure-page")) # they should be redirected to a secure-page route instead
-        flash("Welcome user","sucess")
+            # they should be redirected to a secure-page route instead
+            flash("Welcome login was a sucess","sucess")
+            return redirect(url_for("secure-page"))
+        else:
+            flash("Username or password entered wrong","danger")
+    flash_error(forms)
     return render_template("login.html", form=form)
 
 # user_loader callback. This callback is used to reload the user object from
