@@ -1,0 +1,36 @@
+{% extends base.html %}
+
+{% block main %}
+<h1> Enter Info in the form <h1><br><br>
+
+<div class="safespace">
+    {% include flash_message.html %}
+    <form method='POST' action= "{{url_for(newprofile)}}" enctype="multipart/form-data">
+        <label for "First name">{{ form.firstname.label }} </label><br>
+        <p> Enter your first name</p><br><br>
+        {{ form.firstname(size="40")}}
+        <label for "Last name">{{ form.lastname.label }} </label><br>
+        <p>Enter your last name</p><br>
+        {{form.lastname(size="40")}}
+        <label for "username">{{form.username.label }}</label>
+        <p>Enter a username</p>
+        {{form.username}}
+        <label for "age">{{form.age.label }}</label>
+        <p>Enter your age</p><br>
+        {{form.age}}
+        <label for "gender">{{ form.gender.label }}</label>
+        <p>Pick your gender</p><br>
+        {{form.gender}}
+        <label for "biography">{{form.biography.label }}</label>
+        <p>Enter your biography</p><br>
+        {{form.biography(cols="60",row="6")}}
+        <label for "Profile Picture">{{form.image.label}}</label>
+        <p>Upload a picture</p>
+        {{form.image}}
+    </form>
+    
+    
+    
+</div>
+
+{% endblock %}

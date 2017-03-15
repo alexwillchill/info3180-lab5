@@ -4,14 +4,15 @@ Jinja2 Documentation:    http://jinja.pocoo.org/2/documentation/
 Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
-
-from app import app, db, login_manager
+import os
+from app import app, db #login_manager
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, current_user, login_required
-from forms import LoginForm
-from models import UserProfile
-
-
+from forms import LoginForm, UserProfile
+from app.models import UserProfile
+from werkzeug.utils import secure_filename
+import time
+import uuid
 ###
 # Routing for your application.
 ###
@@ -26,6 +27,49 @@ def about():
     """Render the website's about page."""
     return render_template('about.html')
 
+
+###
+# The functions below should be applicable to all Flask apps.
+###
+@app.route('/profile/', methods=["GET","POST"])
+def addProfile():
+    #Adds new user profile
+    form= UserProfile()
+    if request== "POST":
+        if form.validate_on_submit:
+        
+            userid= str(uuid.uuid4())
+            firstname= request.form['firstname']
+            lastname=request.form['lastname']
+            username=request.form['username']
+            age=request.form['age']
+            biography=request.form['biography']
+            gender= request.form["gender"]
+            image=form.image.data
+            
+            file_folder= app.config['UPLOAD_FOLDER']
+            filename= secure_filename(image.filename)
+            image.save(os.path.join(file_folder, filename))
+            entry_date = time.strftime("%a %d %B %Y")
+
+            user= UserProfile(userid=userid,firstname=firstname,lastname=lastname,age=age,biography=biography,username=username)
+            db.session.add(user)
+            db.session.commit()
+            
+            flash("New user created")
+    return render_template('newprofile.html')   
+    
+    
+@app.route("/profiles",methods=["GET","POST"])
+def viewProfile():
+    return render_template('profile.html')
+    
+@app.route("/profiles/<userid>",methods=["GET","POST"])
+def listProfiles():
+    return render_template('profilelist.html')
+    
+    
+    
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
@@ -35,7 +79,8 @@ def login():
         # and not just one field
     if form.username.data:
         username=form.username.data
-        password=form.username.data
+        password=form.password.data
+        
             # Get the username and password values from the form.
 
             # using your model, query database for a user based on the username
@@ -58,15 +103,6 @@ def login():
     flash_error(forms)
     return render_template("login.html", form=form)
 
-# user_loader callback. This callback is used to reload the user object from
-# the user ID stored in the session
-@login_manager.user_loader
-def load_user(id):
-    return UserProfile.query.get(int(id))
-
-###
-# The functions below should be applicable to all Flask apps.
-###
 
 @app.route('/<file_name>.txt')
 def send_text_file(file_name):
@@ -95,14 +131,26 @@ def page_not_found(error):
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0",port="8080")
 
-
-@app.route('/secure-page')
-@login_required
-def secure_page():
-    return render_template('secure_page.html')
-    
 @app.route('/logout')
 def logout():
+    if current_user.is_authenticated:
+        
+        flash('You have been logged out', 'warning')
         logout_user()
-        flash("Goodbye you have logged out","danger")
-        return redirect(url_for('home.html'))
+        return redirect(url_for("home"))
+    
+    return redirect(url_for("home"))
+    
+    
+    
+@login_manager.user_loader
+def load_user(id):
+    return UserProfile.query.get(int(id))
+    
+if __name__ == '__main__':
+    app.run(debug=True,host="0.0.0.0",port="8080")
+    
+    
+    
+#The routes down here 
+#@app.form('/form.txt/')

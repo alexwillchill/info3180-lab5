@@ -1,0 +1,41 @@
+{% extends base.html %}
+
+{% block main %}
+
+<h2>Profile</h2>
+
+{% include 'flash_message.html' %}
+
+<div class= 'profimg'>
+    <img id='pictur' src="{{ url_for(static,filename="uploads/"+user.image) }}">
+    <p> User Picture</p>
+</div>
+
+<div id="profilename">
+    <h3>{{user.firstname}} {{user.lastname}}</h3> 
+    
+</div>
+
+<div class= 'creationdate'>
+    <p>Date of creation: {{user.entry_date}} </p>
+</div>
+
+<div>
+    <dl>
+        <dt>Profile ID:</dt><dd> {{user.userid}}</dd>
+        <dt>Username:</dt><dd> {{user.username}}</dd>
+        <dt>Age:</dt><dd>{{user.age}}</dd>
+        {% if user.gender=="M" %}
+            <dt>Gender: </dt><dd>Male</dd>
+        {% elif user.gender=="F" %}
+            <dt>Gender: </dt><dd>Female</dd>
+        {% end if%}    
+    </dl>
+    
+</div>
+
+<div class="bio">
+    <h4>{{ user.biography }}</h4>
+</div>
+
+{% endblock %}
