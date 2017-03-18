@@ -6,9 +6,9 @@ This file creates your application.
 """
 import os
 from app import app, db #login_manager
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, jsonify, session, abort
 from flask_login import login_user, logout_user, current_user, login_required
-from forms import LoginForm, UserProfile
+from forms import LoginForm
 from app.models import UserProfile
 from werkzeug.utils import secure_filename
 import time
@@ -45,12 +45,12 @@ def addProfile():
             age=request.form['age']
             biography=request.form['biography']
             gender= request.form["gender"]
-            image=form.image.data
+            image=request.form['image']
             
             file_folder= app.config['UPLOAD_FOLDER']
             filename= secure_filename(image.filename)
             image.save(os.path.join(file_folder, filename))
-            entry_date = time.strftime("%a %d %B %Y")
+            created_on = time.strftime("%a %d %B %Y")
 
             user= UserProfile(userid=userid,firstname=firstname,lastname=lastname,age=age,biography=biography,username=username)
             db.session.add(user)
@@ -61,11 +61,24 @@ def addProfile():
     
     
 @app.route("/profiles",methods=["GET","POST"])
+@login_required
 def viewProfile():
+    users= db.session.query(User).all()
+    listuser=[]
+    for person in users:
+        listuser.append({'username':person.username,'userid ':person.userid})
+        if request.method=='POST' and request.headers['Content-Type']== 'application/json':
+            return jsonify(users=listuser)
     return render_template('profile.html')
     
 @app.route("/profiles/<userid>",methods=["GET","POST"])
-def listProfiles():
+@login_required
+def listProfiles(userid):
+    user= UserProfile.query.filter_by(userid=userid).first()
+    try:
+        return jsonify(user.userid,user.username,user.image,user.gender,use.age,user.created_on)
+    except:
+        flash('No user found','warning')
     return render_template('profilelist.html')
     
     
@@ -100,7 +113,7 @@ def login():
             return redirect(url_for("secure-page"))
         else:
             flash("Username or password entered wrong","danger")
-    flash_error(forms)
+    flash_errors(forms)
     return render_template("login.html", form=form)
 
 
@@ -143,7 +156,7 @@ def logout():
     
     
     
-@login_manager.user_loader
+#@login_manager.user_loader
 def load_user(id):
     return UserProfile.query.get(int(id))
     

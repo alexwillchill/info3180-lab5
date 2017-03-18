@@ -12,6 +12,16 @@ class UserProfile(db.Model):
     password= db.Column(db.String(255))
     entry_date= db.Column(db.DateTime())
     
+    def __init__(self,userid,firstname,lastname,username,age,gender,biography,entry_date):
+        self.userid= userid
+        self.firstname=firstname
+        self.lastname= lastname
+        self.username= username
+        self.age= age
+        self.gender= gender
+        self.biography
+        self.entry_date= entry_date
+    
     def is_authenticated(self):
         return True
 

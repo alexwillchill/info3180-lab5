@@ -4,7 +4,7 @@
 <h1> Enter Info in the form <h1><br><br>
 
 <div class="safespace">
-    {% include flash_message.html %}
+    {% include flash_messages.html %}
     <form method='POST' action= "{{url_for(newprofile)}}" enctype="multipart/form-data">
         <label for "First name">{{ form.firstname.label }} </label><br>
         <p> Enter your first name</p><br><br>

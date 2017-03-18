@@ -1,8 +1,9 @@
-from flask_wtf import FlaskForm, FileAllowed
-from wtforms import StringField, SelectField, IntegerField, FileField, PasswordField
-from wtforms.validators import InputRequired
+from flask_wtf import FlaskForm
+from wtforms import StringField, SelectField, IntegerField, FileField, PasswordField, SubmitField, TextAreaField
+from wtforms.validators import InputRequired, DataRequired
+from flask_wtf.file import FileRequired
 from app import db
-from models import UserProfile
+
 
 class LoginForm(FlaskForm):
     username= StringField('Username',validators=[InputRequired()])
@@ -10,11 +11,11 @@ class LoginForm(FlaskForm):
     
 class UserProfile(FlaskForm):
     username=StringField('Username',validators=[InputRequired()])
-    firstname= StringField('Firstname',validators=[InputRequired()],description='Short')
+    firstname= StringField('Firstname',validators=[InputRequired()])
     lastname= StringField('Lastname',validators=[InputRequired()])
-    age=IntegerField('Age',validator=[InputRequired()])
-    biography= StringField('Biography',validators=[InputRequired()])
+    age=IntegerField('Age',validators=[InputRequired()])
+    biography= TextAreaField('Biography',validators=[DataRequired("Enter anything you want")])
     gender=SelectField('Gender',choices=[('M','Male'),('F','Female')])
-    image= FileField('Image File', validator=[FileAllowed(['jpg','png'],'Image')])
-
+    image= FileField('Image File', validators=[FileRequired()])
+    submit= SubmitField("Submit ")
       
